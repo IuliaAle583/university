@@ -1,1 +1,254 @@
+something to help for the session practical exam:
 
+## these are the main things to know in order to write good and easy to understand 
+code for the exam and are shaped for the professor (proxy is more than enough, but
+easy to work with)
+
+repo ...
+#pragma once
+class Observer
+{
+public:
+	Observer() = default;
+	virtual ~Observer() = default;
+	virtual void update() = 0;
+};
+
+
+class Subject
+{
+private:
+	vector<Observer*> observers;
+public:
+	Subject() = default;
+	~Subject() = default;
+	void registerObserver(Observer* obs) {
+		this->observers.emplace_back(obs);
+	}
+	void notify() {
+		for (auto& obs : observers) {
+			obs->update();
+		}
+	}
+};
+
+class Session:public Subject
+{
+private:
+	Repository& repo;
+public:
+	Session(Repository& repo):repo(repo){}
+!!normal ca un service
+notify();  dupa ce schimb ceva in functii
+
+class GUI:public QWidget, public Observer
+{
+	Q_OBJECT;
+private:
+	Session& session;
+	string userName;
+GUI(Session& session,const string& userName, QWidget* parent = nullptr);
+void GUI::update()
+{
+	reloadQuestions();
+	if (!questionList->selectedItems().isEmpty()) {
+		int questionId = questionList->currentItem()->data(Qt::UserRole).toInt();	//ii ia id-ul ala unic
+		reloadAnswers(questionId);	//ii pune raspunsurile lui acolo
+		handleAnswerSelection();
+	}
+}	//reload la tot
+session.notify(); cand nu am notify normal
+GUI::GUI(Session& session, const string& userName, QWidget* parent):
+	QWidget(parent),session(session),userName(userName)
+{
+	this->session.registerObserver(this);	//il pun ca observer
+	initGUI();
+	connectSignals();
+	reloadQuestions();
+}
+
+//sa adaug in lista
+QString itemText = QString::fromStdString(q.getText() + " (" + q.getName() + ", Answers: " + std::to_string(count) + " )");
+QListWidgetItem* item = new QListWidgetItem(itemText);
+questionList->addItem(item);
+
+//main
+ Repository repo;
+    Session session(repo);
+    for (auto& user : repo.getUsers()) {
+        GUI* w = new GUI(session, user.getName());
+        w->show();
+        windows.push_back(w);
+    }
+
+/// obtin item-ul selectat
+QListWidgetItem* selectedItem = listWidget->currentItem();
+if (!selectedItem)
+    return; // nimic selectat
+
+QString text = selectedItem->text();
+///sa iau direct si sa fac ceva
+connect(listWidget, &QListWidget::itemClicked, this, [](QListWidgetItem* item){
+    QString text = item->text();
+    qDebug() << "Ai selectat:" << text;
+});
+//sa iau al doilea cuv de acolo
+QListWidgetItem* item = listWidget->currentItem();
+if (!item) return;
+QString text = item->text();  
+QStringList cuvinte = text.split(' ', Qt::SkipEmptyParts);
+if (cuvinte.size() >= 2) {
+    QString alDoileaCuvant = cuvinte[1];
+sau cu iss
+
+//sa se schimbe lista live
+connect(lineEdit, &QLineEdit::textChanged, this, &GUI::filtreazaLista);
+
+//iau un item din list widget
+QListWidgetItem* item = listWidget->item(index);
+
+//totul cu const
+//doar repo unde fac tot
+class Model : public QAbstractTableModel
+{
+private:
+	Repository& repo;
+    static vector<Model*> allModels;
+public:
+    Model(Repository& repo) : repo(repo) {
+        allModels.push_back(this);
+    }
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    void updateData();
+    ~Model() {
+        allModels.erase(remove(allModels.begin(), allModels.end(), this), allModels.end());
+    }
+    static void notifyAllModels() {
+        for (Model* m : allModels) {
+            m->updateData();
+        }
+    }
+};
+int Model::rowCount(const QModelIndex& parent) const
+{
+	return repo.getData().size();
+}
+QVariant Model::data(const QModelIndex& index, int role) const
+{
+	if(role!=Qt::DisplayRole)
+		return QVariant();
+	const Idea& idea = repo.getIdeas()[index.row()];
+	switch (index.column()) {
+si folosesc in switch idea.get...
+QVariant Model::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
+		return QVariant();
+	switch (section) {
+/////////////////////////
+void Model::updateData()
+{
+	beginResetModel();
+	endResetModel();
+	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
+}
+////////////////////////
+class GUI:public QWidget
+{
+	Q_OBJECT
+
+private:
+    Repository& repo;
+    Reasercher researcher;
+    Model* model;
+    QSortFilterProxyModel* proxyModel;
+
+    QTableView* tableView
+ GUI(Repository& repo, const Reasercher& res, QWidget* parent = nullptr) :
+        QWidget(parent), repo(repo), researcher(res) {
+        model = new Model(repo);
+        proxyModel = new QSortFilterProxyModel(this);
+        proxyModel->setSourceModel(model);
+        proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+        proxyModel->sort(4, Qt::AscendingOrder);
+        initGUI();
+        connectSignals();
+        setWindowTitle(QString::fromStdString(researcher.getName()));
+
+    }
+//init gui
+tableView = new QTableView;
+tableView->setModel(proxyModel);
+DUPA ORICE MODIFICARE Model::notifyAllModels();
+
+QModelIndex idx = tableView->currentIndex();
+if (!idx.isValid()) return;
+QModelIndex modelIndex = proxyModel->mapToSource(idx);
+std::string title = model->data(modelIndex.sibling(modelIndex.row(), 0), Qt::DisplayRole).toString().toStdString();
+- sa iau indexul de la ceva selectat in tabel
+
+Repository repo;  
+if (repo.getReaserchers().empty()) {
+       qDebug() << "No researchers loaded!";
+       return -1;
+}
+for (const auto& researcher : repo.getReaserchers()) {
+        GUI* gui = new GUI(repo, researcher);
+        gui->show();
+    }
+//sa se modifice tabelul live
+connect(lineEdit, &QLineEdit::textChanged, proxyModel, &QSortFilterProxyModel::setFilterFixedString);
+
+//sau un model in main asa:
+ Repository repo;
+ Model* sharedModel = new Model(repo);
+dupa am
+GUI(Repository& repo, const Reasercher& res, Model* sharedModel, QWidget* parent = nullptr)
+    : QWidget(parent), repo(repo), researcher(res), model(sharedModel) {
+    
+    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(model);
+    proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+apelez direct model->updateData();
+
+//sa afisez datele care indeplinesc o conditie
+class MyFilterModel : public QSortFilterProxyModel {
+    Q_OBJECT
+    QString filterStatus;
+
+public:
+    void setStatusFilter(const QString& status) {
+        filterStatus = status;
+        invalidateFilter(); //  spune proxy-ului să refacă filtrarea
+    }
+
+protected:
+    bool filterAcceptsRow(int row, const QModelIndex& parent) const override {
+        QModelIndex index = sourceModel()->index(row, 2, parent); // status in col 2
+        QString value = sourceModel()->data(index).toString();
+        return value == filterStatus;
+    }
+};
+//constructor gui
+proxyModel = new MyFilterModel(this);
+proxyModel->setSourceModel(model);
+tableView->setModel(proxyModel);
+connect(statusComboBox, &QComboBox::currentTextChanged, this, [=](const QString& status) {
+    static_cast<MyFilterModel*>(proxyModel)->setStatusFilter(status);
+});
+//in GUI.h
+FilterModel* proxyModel; // înlocuiește QSortFilterProxyModel*
+    
+//sa fac combobox
+QComboBox* statusFilterBox = new QComboBox;
+statusFilterBox->addItem("All");
+statusFilterBox->addItem("proposed");
+statusFilterBox->addItem("accepted");
+
+// sa verific la spinbox daca s-a schimbat ceva
+connect(durationSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int val) {
+    proxyModel->setDurationFilter(val);
+});
