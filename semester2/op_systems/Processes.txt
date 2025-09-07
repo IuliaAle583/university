@@ -1,0 +1,15 @@
+1. fork() =>creating new processes, the process is divided in 2 processes
+
+ex. printf("inainte/n");
+fork();
+printf("dupa/n");
+=> inainte
+   dupa
+   dupa
+
+Process hierarchy
+for (int i = 0; i < 3; i++)
+{
+	fork();   
+	printf("mesaj/n");  => 8 processes; 14 prints <- 2+4+8
+}
