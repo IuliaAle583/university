@@ -1,0 +1,266 @@
+ #practical work nr 4
+
+    #Write a program that, given an undirected connected graph, constructs a minimal spanning tree using the Prim's algorithm
+    def prims_algorithm(self, start_node):
+        dad = [-1] * self.get_num_vertices()    # dad[i] = parent of node i in MST
+        dad[start_node] = start_node    # root's parent is itself
+        from queue import PriorityQueue
+        q = PriorityQueue()
+        q.put((0, start_node, start_node))  # (cost, node, parent)
+
+        minimum_cost = 0
+
+        for i in range(self.get_num_vertices()):
+            current_pair = ()
+            while not q.empty():
+                current_pair = q.get()      # get the edge with the minimum cost
+                if dad[current_pair[1]] == -1:      # found an unvisited node
+                    break
+            current_node = current_pair[1]
+            dad[current_node] = current_pair[2]     # add node to MST
+            minimum_cost += current_pair[0]         # add cost to total
+            neighbors = set()
+            # get all unique neighbors (for undirected graph)
+            neighbors.update([nbr for nbr, _ in self.get_out_edges(current_node)])
+            neighbors.update([nbr for nbr, _ in self.get_in_edges(current_node)])
+            for neighbour in neighbors:
+                if dad[neighbour] == -1:    # if neighbor not yet in MST
+                    # get both directions since it's undirected
+                    cost1 = self.get_edge_cost((current_node, neighbour)) or float('inf')
+                    cost2 = self.get_edge_cost((neighbour, current_node)) or float('inf')
+                    cost = min(cost1, cost2)     # choose the lower cost
+                    q.put((cost, neighbour, current_node))      # add to priority queue
+
+        return minimum_cost, dad
+
+    #bonus 2
+    def is_dag(self):
+        return self.topological_sorting() is not None
+
+    # count all paths from `start` to `end` in a DAG
+    def count_paths_bonus_2(self, start, end):
+        top_order = self.topological_sorting()
+        if top_order is None:
+            return 0  # cycle detected
+
+        path_count = [0] * self.num_vertices
+        path_count[start] = 1   # one way to reach start node
+
+        for vertex in top_order:
+            if path_count[vertex] > 0:
+                for neighbor,_ in self.get_out_edges(vertex):
+                    path_count[neighbor] += path_count[vertex]  # accumulate paths
+
+        return path_count[end]
+
+    #bonus 3 Find number of shortest paths from `start` to `end` in a DAG
+    def find_lowest_cost_paths(self, start, end):
+
+        top_order = self.topological_sorting()
+        if top_order is None:
+            return 0, 0
+
+        distances = {vertex: float('inf') for vertex in self.get_vertices()}    # min cost
+        path_count = {vertex: 0 for vertex in self.get_vertices()}               # num paths
+        distances[start] = 0
+        path_count[start] = 1
+
+        for vertex in top_order:
+            for neighbor,_ in self.get_out_edges(vertex):
+                edge_cost = self.edge_costs[(vertex, neighbor)]
+                new_cost = distances[vertex] + edge_cost
+                if new_cost < distances[neighbor]:
+                    distances[neighbor] = new_cost
+                    path_count[neighbor] = path_count[vertex]   # new best path
+                elif new_cost == distances[neighbor]:
+                    path_count[neighbor] += path_count[vertex]  # another shortest path
+
+        return distances[end], path_count[end]
+class Node:
+    def __init__(self, x):
+        self.data = x
+        self.left = None
+        self.right = None
+
+#pre + post
+
+def reconstruct_tree(pre, post, idx, l, h):
+    if idx[0] >= len(pre) or l > h:
+        return None
+    root = Node(pre[idx[0]])    # create root node with current preorder value
+    idx[0] += 1
+    if l == h:
+        return root # only one element left, it's a leaf
+    i = -1
+    # find the next node in preorder inside the postorder array
+    for j in range(l, h + 1):
+        if idx[0] < len(pre) and pre[idx[0]] == post[j]:
+            i = j
+            break
+    if i != -1:
+        # recursively build left and right subtrees
+        root.left = reconstruct_tree(pre, post, idx, l, i)
+        root.right = reconstruct_tree(pre, post, idx, i + 1, h - 1)
+    return root
+
+
+def final_tree(pre, post):
+    idx = [0]
+    return reconstruct_tree(pre, post, idx, 0, len(post) - 1)
+
+#pre + ino
+
+# helper to search index of value in inorder between indices l and r
+def search_inorder(ino, value, l, r):
+    for i in range(l, r + 1):
+        if ino[i] == value:
+            return i
+    return -1
+
+def build_tree_pre_ino(ino, pre, pre_index, l, r):
+    if l > r:
+        return None
+    root_val = pre[pre_index[0]]
+    pre_index[0] += 1
+    root = Node(root_val)
+    index = search_inorder(ino, root_val, l, r)     # find position in inorder
+    # recursively build left and right subtrees
+    root.left = build_tree_pre_ino(ino, pre, pre_index, l, index - 1)
+    root.right = build_tree_pre_ino(ino, pre, pre_index, index + 1, r)
+
+    return root
+
+def build_tree_pre(ino, pre):
+    pre_index = [0]
+    return build_tree_pre_ino(ino, pre, pre_index, 0, len(pre) - 1)
+
+
+#post + ino
+
+# helper to search value in inorder between start and end
+def search_post_inorder(v, start, end, value):
+    for i in range(start, end + 1):
+        if v[i] == value:
+            return i
+    return -1
+
+def build(ino, post, in_start, in_end, post_index):
+    if in_start > in_end:
+        return None
+
+    node = Node(post[post_index[0]])    # get current root from postorder
+    post_index[0] -= 1
+
+    if in_start == in_end:
+        return node # leaf node
+    # find index of current node in inorder
+    in_index = search_post_inorder(ino, in_start, in_end, node.data)
+    # build right subtree first ( process postorder from end)
+    node.right = build(ino, post, in_index + 1, in_end, post_index)
+    node.left = build(ino, post, in_start, in_index - 1, post_index)
+
+    return node
+
+
+def build_tree_post(ino, post):
+    n = len(ino)
+    post_index = [n - 1]    # start from end of postorder
+    return build(ino, post, 0, n - 1, post_index)
+
+
+            elif choice=="29":
+                if self.graph:
+                    self.minimum_cost_spanning_tree()
+                else:
+                    print("No graph loaded.")
+            elif choice=="30":
+                pre = list(map(int, input("Enter the pre-oder list, separated by spaces: ").split()))
+                post = list(map(int, input("Enter the post-oder list, separated by spaces: ").split()))
+                root = final_tree(pre, post)
+                GraphUI.print_edges(root)
+                print()
+            elif choice=="31":
+                pre=list(map(int, input("Enter pre-order list, separated by spaces: ").split()))
+                ino=list(map(int, input("Enter in-order list, separated by spaces: ").split()))
+                root=build_tree_pre(ino, pre)
+                GraphUI.print_edges(root)
+                print()
+            elif choice=="32":
+                post= list(map(int, input("Enter the post-order list, separated by spaces: ").split()))
+                ino=list(map(int, input("Enter in-order list, separated by spaces: ").split()))
+                root=build_tree_post(ino, post)
+                GraphUI.print_edges(root)
+                print()
+            elif choice=="33":
+                    self.check_if_dag()
+            elif choice=="34":
+                    self.count_paths_two_vertices()
+            elif choice=="35":
+                self.count_lowest_paths_two_vertices()
+ def minimum_cost_spanning_tree(self):
+        start_node = int(input("Please enter the starting node: "))
+        minimum_cost_spanning_tree = self.graph.prims_algorithm(
+            start_node)
+        print("The cost of minimum spanning tree is " +
+              str(minimum_cost_spanning_tree[0]))
+        print("The edges of the minimum spanning tree are: ")
+        edges = minimum_cost_spanning_tree[1]
+        for i in range(len(edges)):
+            if i != edges[i]:
+                print(str(i) + " " + str(edges[i]))
+
+    #bonus 1, hw 4
+    @staticmethod
+    def print_edges(node):
+        if node is None:
+            return
+        if node.left is not None:
+            print(f"{node.data} -> {node.left.data}")
+        if node.right is not None:
+            print(f"{node.data} -> {node.right.data}")
+        GraphUI.print_edges(node.left)
+        GraphUI.print_edges(node.right)
+
+    #bonus 2
+    def check_if_dag(self):
+        if self.graph is None:
+            print("There is no graph.")
+            return
+        graph=self.graph
+        if self.graph.is_dag():
+            top=self.graph.topological_sorting()
+            print("the graph is a DAG. Topological order is: ")
+            print(top)
+        else:
+            print("The graph is not a DAG.")
+
+    def count_paths_two_vertices(self):
+        if self.graph is None:
+            print("There is no graph.")
+            return
+        graph=self.graph
+        if not graph.is_dag():
+            print("The graph is not a DAG.")
+            return
+        start = int(input("Enter the start vertex: "))
+        end = int(input("Enter the end vertex: "))
+        num_paths = graph.count_paths_bonus_2(start, end)
+        print(f"The number of distinct paths from vertex {start} to vertex {end} is {num_paths}.")
+
+    def count_lowest_paths_two_vertices(self):
+        if self.graph is None:
+            print("No graph selected.")
+            return
+
+        graph = self.graph
+        if not graph.is_dag():
+            print("The graph is not a DAG. Cannot find paths.")
+            return
+
+        start = int(input("Enter the start vertex: "))
+        end = int(input("Enter the end vertex: "))
+        min_cost, count_paths = graph.find_lowest_cost_paths(start, end)
+        if count_paths == 0:
+            print(f"No paths available from {start} to {end}.")
+        else:
+            print(f"Minimum cost from {start} to {end} is {min_cost} with {count_paths} distinct path(s).")

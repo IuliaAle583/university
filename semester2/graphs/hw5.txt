@@ -1,0 +1,212 @@
+#homework 5
+    def first_version(self, start, end):
+        from typing import List, Optional
+        vertices = list(self.get_vertices())
+        n = len(vertices)
+        index_map = {v: i for i, v in enumerate(vertices)}
+        rev_index = {i: v for v, i in index_map.items()}
+
+        INF = float('inf')
+        dist = [[INF] * n for _ in range(n)]
+        next_node: List[List[Optional[int]]] = [[None for _ in range(n)] for _ in range(n)]
+
+        for v in vertices:
+            i = index_map[v]
+            dist[i][i] = 0
+            next_node[i][i] = v
+
+        for (u, v), cost in self.edge_costs.items():
+            if u in index_map and v in index_map:
+                i, j = index_map[u], index_map[v]
+                dist[i][j] = cost
+                next_node[i][j] = v
+
+        for k in range(n):
+            for i in range(n):
+                for j in range(n):
+                    if dist[i][k] + dist[k][j] < dist[i][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+                        next_node[i][j] = next_node[i][k]
+
+        for i in range(n):
+            if dist[i][i] < 0:
+                raise ValueError("Graph contains a negative weight cycle")
+
+        if next_node[index_map[start]][index_map[end]] is None:
+            return None, INF  # No path
+
+        path = [start]
+        i, j = index_map[start], index_map[end]
+        while start != end:
+            start = next_node[i][j]
+            path.append(start)
+            i = index_map[start]
+
+        return path, dist[index_map[path[0]]][index_map[path[-1]]]
+
+    # another version
+    def bellman_ford(self, src, dest):
+        dist = {v: float('inf') for v in self.in_edges}
+        prev = {v: None for v in self.in_edges}
+        
+        dist[src] = 0
+
+        for _ in range(len(self.in_edges) - 1):
+            for (u, v), cost in self.edge_costs.items():
+                if dist[u] + cost < dist[v]:
+                    dist[v] = dist[u] + cost
+                    prev[v] = u
+
+        # Check for negative cost cycles
+        for (u, v), cost in self.edge_costs.items():
+            if dist[u] + cost < dist[v]:
+                return None, []  # Negative cycle detected
+
+        if dist[dest] == float('inf'):
+            return float('inf'), []
+
+        # Reconstruct path
+        path = []
+        current = dest
+        while current is not None:
+            path.append(current)
+            current = prev[current]
+        path.reverse()
+        return dist[dest], path
+
+
+    @staticmethod
+    def version3(graph, costs, src, dest, max_depth=20):
+        best_cost = float('inf')
+        best_path = None
+        negative_cycle_detected = False
+
+        min_cost_to_node = {src: 0}  # minimum cost to get to that vertex
+        path_set = set([src])  # to see if a node is already in the path
+
+        def backtrack(current, cost_so_far, path):
+            nonlocal best_cost, best_path, negative_cycle_detected
+
+            if negative_cycle_detected:
+                return
+
+            if len(path) > max_depth or cost_so_far >= best_cost:
+                return
+
+            if current in min_cost_to_node and cost_so_far > min_cost_to_node[current]:
+                return
+            else:
+                min_cost_to_node[current] = cost_so_far
+
+            for neighbor in graph.get(current, []):
+                edge_cost = costs.get((current, neighbor), float('inf'))
+                new_cost = cost_so_far + edge_cost
+
+                if neighbor in path_set:
+                    if new_cost < min_cost_to_node.get(neighbor, float('inf')):
+                        negative_cycle_detected = True
+                        return
+                    else:
+                        continue
+
+                path.append(neighbor)
+                path_set.add(neighbor)
+                backtrack(neighbor, new_cost, path)
+                path.pop()
+                path_set.remove(neighbor)
+
+            if current == dest:
+                if cost_so_far < best_cost:
+                    best_cost = cost_so_far
+                    best_path = path[:]
+
+        backtrack(src, 0, [src])
+
+        if negative_cycle_detected:
+            return None, None, True
+
+        return best_cost, best_path, False
+
+    def practical_work5(self):
+        if self.graph is None:
+            print("No graph loaded.")
+            return
+        try:
+            start = int(input("Enter start vertex: "))
+            end = int(input("Enter end vertex: "))
+        except ValueError:
+            print("Invalid input. Please enter integer vertices.")
+            return
+        try:
+            result = self.graph.first_version(start, end)
+        except ValueError as e:
+            print(e)
+            return
+
+        if result is None:
+            print(f"No path found from {start} to {end}.")
+            return
+        path, cost = result
+        if path is None or cost == float('inf'):
+            print(f"No path found from {start} to {end}.")
+        else:
+            print(f"Minimum cost path from {path[0]} to {path[-1]}:")
+            print(" -> ".join(map(str, path)))
+            print(f"Total cost: {cost}")
+
+    def bellman_ford_ui(self):
+        if self.graph is None:
+            print("No graph loaded.")
+            return
+        try:
+            src = int(input("Enter source vertex: "))
+            dest = int(input("Enter destination vertex: "))
+        except ValueError:
+            print("Invalid input. Please enter integers.")
+            return
+        if not (src in self.graph.get_vertices() and dest in self.graph.get_vertices()):
+            print("Source or destination vertex does not exist in the graph.")
+            return
+        cost, path = self.graph.bellman_ford(src, dest)
+        if cost is None:
+            print("The graph contains a negative cost cycle. No shortest path.")
+        elif cost == float('inf'):
+            print(f"No path exists from {src} to {dest}.")
+        else:
+            print(f"Minimum cost from {src} to {dest} is: {cost}")
+            print("Path: " + " -> ".join(map(str, path)))
+
+    def version3ui(self):
+        if self.graph is None:
+            print("No graph loaded.")
+            return
+
+        try:
+            src = int(input("Enter the source vertex: "))
+            dest = int(input("Enter the destination vertex: "))
+        except ValueError:
+            print("Please enter valid integer vertices.")
+            return
+
+        graph_dict = {}
+        costs_dict = {}
+
+        for v in self.graph.get_vertices():
+            neighbors = [target for target, _ in self.graph.get_out_edges(v)]
+            graph_dict[v] = neighbors
+            for neighbor in neighbors:
+                cost = self.graph.get_edge_cost((v, neighbor))
+                costs_dict[(v, neighbor)] = cost
+
+        best_cost, best_path, negative_cycle = self.graph.version3(graph_dict, costs_dict, src, dest)
+
+        if negative_cycle:
+            print("Negative cost cycle detected!")
+            pass
+        else:
+            if best_path is None:
+                print(f"No path found from {src} to {dest}.")
+            else:
+                print(f"Minimum cost path from {src} to {dest} is:")
+                print(" -> ".join(map(str, best_path)))
+                print(f"With total cost: {best_cost}")
