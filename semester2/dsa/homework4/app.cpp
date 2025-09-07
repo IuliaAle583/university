@@ -1,0 +1,20 @@
+#include <iostream>
+#include "MultiMap.h"
+#include "ExtendedTest.h"
+#include "ShortTest.h"
+#include "MultiMapIterator.h"
+#include "test.h"
+
+using namespace std;
+
+
+int main() {
+
+
+	testAll();
+	testAllExtended();
+	testMostFrequent();
+	cout << "End" << endl;
+	system("pause");
+
+}
