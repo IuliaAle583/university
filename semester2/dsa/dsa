@@ -1,1 +1,128 @@
+random things i have on my computer
+
+
+restart
+phi:=x->(x+1)*exp(x^2)
+h:=0.1;x:=0;y:=1
+f:=(x,y)->2*x*y+exp(x^2)
+for i from 1 to 15 do y:=y+h/2*f(x,y)+h/2*f(x+h,y+h*f(x,y)): psi(i):=y:x:=x+h:print(x,y,phi(x),abs(y-phi(x)));od:
+points:=[[n,psi(n)[$n=1..15]:with(plots):pointplot(points,style=point;plot(phi(t),t=1..1.5);
+aplica asta, dar pe functia mea
+
+
+an array is called mountain like if it consists of insreasing sequence of integer numbers immediately followed by decreasing sequence. both increasing and decreasing sequences must be nonempty. implement an algorithm that can find maximum value in a mountain like array of size n in time proportional to log2(n). show how algorithm works on 10, 34, 56, 76, 87, 80, 70, 66, 56, 30, 28, 25, 20, 15,11 in this order exactly
+
+show the result of merging the 2 binomial heaps: 3-7, 7-11, 7-2, 2-6, 2-5, 6-8 and 10-12, 10-1, 1-4, 4-15, 1-9
+
+we want to use cuckoo hashing with two tables of size m=11. for the first we use h1(x)=x%m , second h2(x)=(sum of digits of x)%m. show tgat the following elements inserted in the hast table using alg discussed at course: 71,9,25,69,52,8,16,4. show table after every insertion and explain. explain how 52 should be removed
+
+we want to encode using huffman: BACA DAEA FAB BAAA GAH. show process of building huffman encoding binary tree. specify code for each letter. take into consideration space too
+
+choose an answer: 1. what info can we extract from the hop-info of position in a hopscotch hast table? a. whether next pos are empty or not
+b. which ekement hast to the given position
+c. wheter elems from next pos ehere deleted
+d. wheter given pos empty or not
+2. consider a queue an circular array. what would be the probl if we try to keep all items in fromt of the array (data[1] always in front of the queue) 
+a. creating nre queue takes linear time
+b. the top op takes linear time
+c. the push op takes linear time
+d. the pop operation takes linear time
+3. max poss depth of binary tree with 14 nodes?
+a.3 b.5 c.7 d.13 e.14
+4. which of the following it. op. for set on hash table (collision resolution with coallescent chaining) does not have theta(1) complexity:
+a. init b.getElement c.valid d.next e.all of them are theta(1)
+5. what is the value of the postfx expression 6 1 + 8 2 4 + * + ?
+a. value in [-15,-100]
+b. value in [-5,-15]
+c. value in [5,-5]
+d. value in [5,15]
+e.value in [15,100]
+6. is an array that cont elements sorted increasing a binary heap?
+a. no b. yes, min_heap, c. yes, max_heap, d. depends on elements
+could be more than 1 correct answers
+
+implement multimap on linked hash table. (hash table with separate chaining that offers an interator that displays the elements in the order in which they were inserted). give the representation of multimap and implement add operation. specify the complex of operations. wirte in pseudocode
+
+consider ADT searchable queue, which is like a regular queue, but it also has a search operation.adt searchablequeue should have the following operations and complexities:
+-init(sq) - create a new, expty searchablequeue - theta(1) total complexity
+-push(sq,e)- adds a new element to the searchablequeue - theta(1) total complexity
+-search(sq,e)-returns true if e is in the searchablequeue sq, false otherwise -theta(1) average
+-pop(sq)-removes and returns the first added element from searchable queue. throws an exception if sq is empty - theta(1) total complexity
+-top(sq)-returns the first added element from searchable queue. throws an exception if sq is empty-theta(1) total complexity
+-isEmpty(sq)-returns true if sq is empty, false otherwise. - theta(1) total complexity
+a) which data structure or what combination of data structures would you use as representation fro the searchableQueue?
+b) explain in short how would you implement each operation of the searchableQueue and why it fits the complexity requirement
+c) give the representation of the searchableQueue and implement in pseudocode the pop operation
+
+consider adt pathHolder which is like a bag, storing paths taken on a map. we assume that the map is a grid and a path is a sequence/string made of the following characters: 'W'(west),'E'(east),'N'(north),'S'(south). we assume that the path is always a valid one (contains only the previous 4 characters). adt pathHolder should support the followng operations and respect the complexities:
+-init(ph)-create a new, empty pathHolder - theta(1) total complexity
+-insert(ph.p)-adds in pathHolder a new path,p. this path is added again, even if it was already part of the containter - theta(length of the path) total complexity
+-nrOccurences(ph,p)- returns how many times the path p is in the PathHolder - theta(length of the path) total complexity
+-nrPathStartingWith(ph,p)-returns how many paths are in the PathHolder which start whit p - theta(length of the path) total complexity
+a) which data structure or combination of data structures would you use as representation for pathHolder and how?
+b) explain in short how would you implement each operation of the pathHolder and why the implementation fits the requirement
+c) give the representation of the PathHolder and implement in pseudocode the insert operation
+
+designe a linked hash table data structure optimized for getting the elements in sorted order. consider the container has at least the following operations: search, add and remove. the iterator gets the elements in sorted order.
+a) give the representation for the container and iterator. explain the choices. pseudocode everything
+b) specify and implement the operation add. explain how the operation works. give its complexity : bc,wc,total
+c) explain, on short, how operations search and remove work. specify their complexities
+d) implement iterator operations. specify their complexities, bc,wc,total
+e) draw the ds containing the elements 90, 40, 70, 80, 60, added in order 
+
+consider extendedqueue adt which is similar to a queue adt, but is also has an operation size(q) which returns the number of elements. you can assume that the extendedqueue adt is already implemented. show how a stack can be implemented over exactly one extended queue
+a) give the specifications for the operations of the extended queue
+b) give the representation to the stack over extendedQueue
+c) explain how your ds should work for push and pop. show the content of the internal representation including the content of the extendedQueue memeber after pushing 1,2,3 on an empty stack. then after popping 1 elemnts, the after adding element 4 and then after popping one more element
+d) implement all stack operations, usign the operations of the extended queue
+e) specify the complexity (bc,wc,total) fro every stack operation, assuming all extended queue operations are theta(1)
+
+implement an iterator for a binary search tree with theta(1) extra storage. 
+a) give the representation of the bst - use a linked representation with dynamic allocation, with a field for parent and the iterator
+b) soecufy the adt iterator (descriptiion, pre, post, throws)
+c) implement the iterator operations
+d) specify the complexity of the operation next (bc,wc,ac) and where are they met
+
+consider adt specialPriorityQueue which stores integer numbers and their priorities (priorities are positive or negative - we do not know upper or lower bound) and it is similar to a Priority Queue, but we can return and remove the element with the n'th smallest priority, not just the one with the minimum. we know that priorities are unique. this containter should support the following operations and respect the following requirements:
+-init (spq) - create a new, empty special priority queue theta(1) total complexity
+-push(spq,x,p)- adds an integer number x with priority p to the SpecialPriorityQueue spq. it is guaranteed that there is no other element with the same priority - theta(logn) total complexity
+-findNthSmallest(spq,nr,e,p)- returns the element with the nth smallest priority from spq and its priority (through the parameters e and p). if nr is negative or 0 or greater than the number of elements in spq an exception is thrown - O(logn) total complexity
+-popNthSmallest(spq,nr,e,p)-removes and returns the elements with the nth smallest priority from spq.if nr is negative or 0 or greater than the number of elements in spq an exception is thrown - O(logn) total complexity
+1. which data structure or combination of data structures would you use as representation for the specialPriorityQueue?
+2. provide a drawing of how the representation of the specialPriorityQueue looks like with a few elements added (between 5 and 10 elements)
+3. explain in short how would you implement each operation of the SpecialPriorityQueue and why implementation fits the complexity requirement
+4. give the representation of the special priority queue and implement in pseudocode the fingNthSmallest operation
+
+consider a singly linked list containing distinct positive and negative numbers. write an efficient algorithm to rearrange the nodes of the list in such a wat that all the nodes with negative numbers are in front of all the nodes with positive numbers, withouth modifying the relative order of the positive and negative numbers. for example, if the list contains the values 4 -1 2 -6, the algorithm should change it to -1 06 7 2 in this order. you need to rearrange the nodes, not the information from the ndes. give the representation of the list, implement the algorithm and specify and shortly justify its complexity
+
+given a binary tree and two elements, e1 and e2 which might be or might not be in the tree, determine if therse 2 elements are on the same level in the tree. give the representation of the binary tree use a linked representation with dynamic allocation without a field for parent/hight/level. implement the required operation and specify its time complexity. if uou use an auxiliary data structure/containter,specify the used operations
+
+consider adt recentSet which is like a regular set, holding integer numbers, but it has two special iterators: one that iterates over the most recently added k even numbers that are still in the recentset (where k is a parameter passed to the iterator function) and another iterator which does the same with odd numbers. the recentSt should have the following operations and complexities
+-init(rs) - create a new empty recent set theta(1) total
+-insert(rs,v)-insert a new value in the recent set. if the value already exists the operation returns false and does not add it again. if the value is added, the operation returns true - theta(1) average
+-search(rs,v)- returns true if v in in rs, false otherwise theta(1) average
+-delete(rs,v)-removes value v from rs. returns true if the element was removed, false otherwise- theta(1) average
+-iteratorEven(rs,k,it)-return an iterator which will iterate throu the most recently added k even numbers that are still in rs. if k is greater than the number of even elements in the containter, it will iterate through all the existing even elements. if k is 0 or negative, an exception is thrown theta(1) total
+-iteratorOdd(rs,k,it) save as IteratorEven, nut it works with odd numbers
+-all iterator operation need to be implemented with theta(1) total complexity
+1. which data structure or what combination of data structures would you use as representation for the RecentSet and how?
+2. provide a drawing of how the representation of the recentSet looks like with a fwe element added (between 5 and 10)
+3. explain in short how would you implement each operation of the recentSet and why it fits the complexity requirement
+4. show the representation of the recentSet and implement in pseudocode the insert operation
+
+give an algorithm to traverse a binary tree in the zigzag order (on levels, but one level should be displayed left to right, the next right to left and so on). give the representation of the binary tree and implement the required subalgorithm. specift the time complexity of the operation, if you use an auxiliary data structure/container specify the used operations
+
+consider adt recentMap which is like a regular map, holding integer numbers, but it has two special iterators: one that iterates over the most recently added n  key-value pairs where the value is even numbers that are still in the recentMap (where n is a parameter passed to the iterator function) and another iterator which does the same with odd values. the recentMap should have the following operations and complexities
+-init(rm) - create a new empty recent map theta(1) total
+-insert(rs,k,v)-insert a new key-value in the recent map. if the key already exists the operation exchanges the value to v and the pair (k,v) is considered newly added  - theta(1) average
+-search(rs,k)- returns the value associated to k or NULL_TVALUE if k is not in rm theta(1) average
+-delete(rs,k)-removes value associated to k from rm. returns the associated value if k was in RecentMap, or NULL_TVALUE otherwise- theta(1) average
+-iteratorEvenValues(rm,n,it)-return an iterator which will iterate throu the most recently added n pairs that are stiil in rm, where the value is even. if n is greater than the number of even elements in the containter, it will iterate through all the existing even elements. if k is 0 or negative, an exception is thrown theta(1) total
+-iteratorOddValues(rs,k,it) save as IteratorEven, nut it works with odd values
+-all iterator operation need to be implemented with theta(1) total complexity
+1. which data structure or what combination of data structures would you use as representation for the RecentSet and how?
+2. provide a drawing of how the representation of the recentMap looks like with a fwe element added (between 5 and 10)
+3. explain in short how would you implement each operation of the recentMap and why it fits the complexity requirement
+4. show the representation of the recentSet and implement in pseudocode the insert operation
+
 
