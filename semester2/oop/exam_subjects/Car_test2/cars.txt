@@ -1,0 +1,27 @@
+Body style: 
+Electric engine
+autonomy 10
+price 3000.100000
+Price of car: 24000800.000000
+
+Body style: 
+Electric engine
+autonomy 100
+price 3001.000000
+Price of car: 24008000.000000
+
+Body style: 
+Turbo
+Price 3100.000000
+Price of car: 24800000.000000
+
+Body style: 
+Turbo
+Price 3100.000000
+Price of car: 24800000.000000
+
+Body style: 
+Turbo
+Price 3100.000000
+Price of car: 24800000.000000
+
