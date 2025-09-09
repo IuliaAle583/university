@@ -1,0 +1,28 @@
+Refrigirator
+ID: 1a
+Electricity usage class: A
+Has freezer1
+
+Refrigirator
+ID: 1b
+Electricity usage class: A+
+Has freezer1
+
+DIshwasher
+ID: 2a
+Consumed electricity for one hour: 20.000000
+
+DIshwasher
+ID: 2b
+Consumed electricity for one hour: 50.000000
+
+Refrigirator
+ID: 1aa
+Electricity usage class: A+
+Has freezer1
+
+Refrigirator
+ID: 2s
+Electricity usage class: A
+Has freezer0
+
