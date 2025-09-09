@@ -1,0 +1,3 @@
+maria|streptococcus,lactobacillus
+ana|bacillus,streptococcus
+john|salmonella,ecoli

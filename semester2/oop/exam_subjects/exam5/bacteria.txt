@@ -1,0 +1,4 @@
+e_coli|lactobacillus|2|diarrhea,gastritis
+strep_A|streptococcus|4|fever,sore_throat
+bac1|salmonella|10|flu,cough
+bac2|ecoli|15|cold
